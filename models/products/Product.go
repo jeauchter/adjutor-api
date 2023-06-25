@@ -12,7 +12,6 @@ type Product struct {
 	Name          string    `gorm:"size:255;not null;unique" json:"name"`
 	ProductTypeID int32     `gorm:"not null;index" json:"productTypeId"`
 	StyleID       int32     `gorm:"not null;index" json:"styleId"`
-	TagID         int32     `gorm:"not null;index" json:"tagId"`
 	ClassID       int32     `gorm:"not null;index" json:"classId"`
 	VendorID      int32     `gorm:"not null;index" json:"vendorId"`
 	CreatedAt     time.Time `json:"createdAt"`
@@ -21,7 +20,6 @@ type Product struct {
 	UpdatedBy     int32     `json:"updatedBy"`
 	ProductType   ProductType
 	Style         Style
-	Tag           Tag
 	Class         Class
 	Vendor        Vendor
 }

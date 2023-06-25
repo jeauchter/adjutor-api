@@ -26,6 +26,7 @@ var productModels = []interface{}{
 	&products.ItemAttribute{},
 	&products.ProductType{},
 	&products.Tag{},
+	&products.TagProductMap{},
 	&products.Item{},
 	&products.Product{},
 	&products.Style{},

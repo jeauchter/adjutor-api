@@ -7,7 +7,7 @@ import (
 func (r *Routers) InitializeTagRoutes(s http.HandlerFunc) {
 
 	// Home Route
-	r.routers.HandleFunc("/tag", s).Methods("GET")
+	r.routers.HandleFunc("/tags", s).Methods("GET")
 
 	// // Login Route
 	// s.Router.HandleFunc("/login", middlewares.SetMiddlewareJSON(s.Login)).Methods("POST")
