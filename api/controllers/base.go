@@ -1,28 +1,23 @@
 package controllers
 
 import (
-	"fmt"
-	"log"
-	"net/http"
-
-	"github.com/gorilla/mux"
+	"github.com/jeremyauchter/adjutor/api/middlewares"
 	"github.com/jeremyauchter/adjutor/api/routes"
 	"github.com/jeremyauchter/adjutor/connect"
 )
 
 type Server struct {
 	database connect.Server
-	Router   routes.Routes
+	router   routes.Routers
 }
 
 func (server *Server) Initialize() {
 	server.database.Connect()
-	server.Router = mux.NewRouter()
-
-	server.initializeRoutes()
+	server.router.StartRouter()
+	server.router.InitializeRoutes(middlewares.SetMiddlewareJSON(server.Home))
+	server.router.InitializeTagRoutes(middlewares.SetMiddlewareJSON(server.Home))
 }
 
 func (server *Server) Run(addr string) {
-	fmt.Println("Listening to port 8080")
-	log.Fatal(http.ListenAndServe(addr, server.Router))
+	server.router.Run(addr)
 }

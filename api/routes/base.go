@@ -1,14 +1,25 @@
 package routes
 
 import (
-	"github.com/jeremyauchter/adjutor/api/middlewares"
-	"github.com/jeremyauchter/pet-retriever/api/controllers"
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-func initializeTagRoutes(s *controllers.Server) {
+type Routers struct {
+	routers *mux.Router
+}
+
+func (r *Routers) StartRouter() {
+	r.routers = mux.NewRouter()
+}
+
+func (r *Routers) InitializeRoutes(s http.HandlerFunc) {
 
 	// Home Route
-	s.Router.HandleFunc("/tag", middlewares.SetMiddlewareJSON(s.Home)).Methods("GET")
+	r.routers.HandleFunc("/", s).Methods("GET")
 
 	// // Login Route
 	// s.Router.HandleFunc("/login", middlewares.SetMiddlewareJSON(s.Login)).Methods("POST")
@@ -26,4 +37,9 @@ func initializeTagRoutes(s *controllers.Server) {
 	// s.Router.HandleFunc("/posts/{id}", middlewares.SetMiddlewareJSON(s.GetPost)).Methods("GET")
 	// s.Router.HandleFunc("/posts/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.UpdatePost))).Methods("PUT")
 	// s.Router.HandleFunc("/posts/{id}", middlewares.SetMiddlewareAuthentication(s.DeletePost)).Methods("DELETE")
+}
+
+func (r *Routers) Run(addr string) {
+	fmt.Println("Listening to port 8080")
+	log.Fatal(http.ListenAndServe(addr, r.routers))
 }
