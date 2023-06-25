@@ -6,12 +6,13 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/jeremyauchter/adjutor/api/routes"
 	"github.com/jeremyauchter/adjutor/connect"
 )
 
 type Server struct {
 	database connect.Server
-	Router   *mux.Router
+	Router   routes.Routes
 }
 
 func (server *Server) Initialize() {

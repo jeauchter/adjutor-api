@@ -10,3 +10,4 @@ FROM alpine:latest
 COPY --from=build /opt/adjutor /opt/adjutor
 EXPOSE 8080
 ENTRYPOINT [ "/opt/adjutor" ]
+

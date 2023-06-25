@@ -5,7 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/jeremyauchter/adjutor/models"
+	"github.com/jeremyauchter/adjutor/models/auth"
+	"github.com/jeremyauchter/adjutor/models/products"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -17,18 +18,18 @@ type Server struct {
 }
 
 var productModels = []interface{}{
-	&models.Address{},
-	&models.Audience{},
-	&models.Class{},
-	&models.Country{},
-	&models.Department{},
-	&models.ItemAttribute{},
-	&models.ProductType{},
-	&models.Tag{},
-	&models.Item{},
-	&models.Product{},
-	&models.Style{},
-	&models.Vendor{},
+	&products.Address{},
+	&products.Audience{},
+	&products.Class{},
+	&products.Country{},
+	&products.Department{},
+	&products.ItemAttribute{},
+	&products.ProductType{},
+	&products.Tag{},
+	&products.Item{},
+	&products.Product{},
+	&products.Style{},
+	&products.Vendor{},
 }
 
 func (server *Server) Connect() {
@@ -40,7 +41,7 @@ func (server *Server) Connect() {
 	}
 
 	server.InitializeAuth(os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_HOST"))
-	server.Auth.Debug().AutoMigrate(&models.User{}) //database migration
+	server.Auth.Debug().AutoMigrate(&auth.User{}) //database migration
 	server.InitializeProduct(os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_HOST"))
 	server.Product.Debug().AutoMigrate(productModels...)
 }
