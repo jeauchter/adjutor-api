@@ -2,6 +2,8 @@ package products
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Tag struct {
@@ -12,4 +14,15 @@ type Tag struct {
 	CreatedBy int32     `json:"createdBy"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	UpdatedBy int32     `json:"updatedBy"`
+}
+
+func (p *Tag) AllTags(db *gorm.DB) (*[]Tag, error) {
+	var err error
+	tags := []Tag{}
+	err = db.Debug().Model(&Tag{}).Where("active = ?", 1).Limit(100).Find(&tags).Error
+	if err != nil {
+		return &[]Tag{}, err
+	}
+
+	return &tags, nil
 }
