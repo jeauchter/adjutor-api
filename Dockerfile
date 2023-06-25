@@ -3,10 +3,10 @@ WORKDIR /app
 COPY go.mod .
 RUN go mod download
 COPY *.go .
-RUN CGO_ENABLED=0 GOOS=linux go build -o /opt/rest-service
+RUN CGO_ENABLED=0 GOOS=linux go build -o /opt/adjutor
 
 #final
 FROM alpine:latest
-COPY --from=build /opt/rest-service /opt/rest-service
+COPY --from=build /opt/adjutor /opt/adjutor
 EXPOSE 8080
-ENTRYPOINT [ "/opt/rest-service" ]
+ENTRYPOINT [ "/opt/adjutor" ]
