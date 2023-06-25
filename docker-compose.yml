@@ -1,0 +1,21 @@
+version: '3.3'
+services:
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+       MYSQL_USER: $DB_USER
+       MYSQL_PASSWORD: $DB_PASSWORD
+       MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    networks:
+      - adjutor
+    volumes:
+      - .docker/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      - /data/db:/var/lib/mysql
+networks:
+  adjutor:
+    driver: bridge
