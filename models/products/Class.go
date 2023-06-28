@@ -19,7 +19,7 @@ type Class struct {
 	UpdatedBy int32     `json:"updatedBy"`
 }
 
-func (handle *Class) AllClasss(db *gorm.DB) (*[]Class, error) {
+func (handle *Class) AllClasses(db *gorm.DB) (*[]Class, error) {
 	var err error
 	classs := []Class{}
 	err = db.Debug().Model(&Class{}).Where("active = ?", 1).Limit(100).Find(&classs).Error
