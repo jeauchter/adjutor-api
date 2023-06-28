@@ -13,6 +13,7 @@ func startRoutes() {
 	router.InitializeTagRoutes(server)
 	router.InitializeVendorRoutes(server)
 	router.InitializeAudienceRoutes(server)
+	router.InitializeDepartmentRoutes(server)
 }
 
 func Run() {
