@@ -30,7 +30,7 @@ func (t *Tag) AllTags(db *gorm.DB) (*[]Tag, error) {
 	return &tags, nil
 }
 
-func (handle *Tag) Prepare() {
+func (handle *Tag) PrepareTag() {
 	handle.ID = 0
 	handle.Name = html.EscapeString(strings.TrimSpace(handle.Name))
 
@@ -38,7 +38,7 @@ func (handle *Tag) Prepare() {
 	handle.UpdatedAt = time.Now()
 }
 
-func (handle *Tag) Validate() error {
+func (handle *Tag) ValidateTag() error {
 
 	if handle.Name == "" {
 		return errors.New("name required")
@@ -46,7 +46,7 @@ func (handle *Tag) Validate() error {
 	return nil
 }
 
-func (handle *Tag) Create(db *gorm.DB) (*Tag, error) {
+func (handle *Tag) CreateTag(db *gorm.DB) (*Tag, error) {
 	var err = db.Debug().Model(&Tag{}).Create(&handle).Error
 	if err != nil {
 		return &Tag{}, err
@@ -62,7 +62,7 @@ func (handle *Tag) TagByName(db *gorm.DB, tagName string) (*Tag, error) {
 	return handle, nil
 }
 
-func (handle *Tag) Update(db *gorm.DB, id uint32) (*Tag, error) {
+func (handle *Tag) UpdateTag(db *gorm.DB, id uint32) (*Tag, error) {
 	var err = db.Debug().Model(&Tag{}).Where("id = ?", id).Updates(Tag{Name: handle.Name, Active: handle.Active}).Error
 	if err != nil {
 		return &Tag{}, err
@@ -70,7 +70,7 @@ func (handle *Tag) Update(db *gorm.DB, id uint32) (*Tag, error) {
 	return handle, nil
 }
 
-func (handle *Tag) Delete(db *gorm.DB, id uint32) (int64, error) {
+func (handle *Tag) DeleteTag(db *gorm.DB, id uint32) (int64, error) {
 
 	db = db.Debug().Model(&Tag{}).Where("id = ?", id).Take(&Tag{}).Delete(&Tag{})
 

@@ -39,8 +39,8 @@ func (server *Server) CreateTag(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	tag.Prepare()
-	err = tag.Validate()
+	tag.PrepareTag()
+	err = tag.ValidateTag()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -50,7 +50,7 @@ func (server *Server) CreateTag(w http.ResponseWriter, r *http.Request) {
 	// 	responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 	// 	return
 	// }
-	tagCreated, err := tag.Create(server.database.Product)
+	tagCreated, err := tag.CreateTag(server.database.Product)
 	if err != nil {
 		formattedError := formaterror.FormatError(err.Error())
 		responses.ERROR(w, http.StatusInternalServerError, formattedError)
@@ -102,14 +102,14 @@ func (server *Server) UpdateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tagUpdate.Prepare()
-	err = tagUpdate.Validate()
+	tagUpdate.PrepareTag()
+	err = tagUpdate.ValidateTag()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	tagUpdated, err := tagUpdate.Update(server.database.Product, id)
+	tagUpdated, err := tagUpdate.UpdateTag(server.database.Product, id)
 
 	if err != nil {
 		formattedError := formaterror.FormatError(err.Error())

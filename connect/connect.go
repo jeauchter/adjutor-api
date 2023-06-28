@@ -23,7 +23,7 @@ var productModels = []interface{}{
 	&products.Class{},
 	&products.Country{},
 	&products.Department{},
-	&products.ItemAttribute{},
+	&products.ItemVariant{},
 	&products.ProductType{},
 	&products.Tag{},
 	&products.TagProductMap{},
