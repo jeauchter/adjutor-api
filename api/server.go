@@ -8,11 +8,15 @@ import (
 var server = controllers.Server{}
 var router = routes.Routers{}
 
-func Run() {
-	server.Initialize()
-	router.StartRouter()
+func startRoutes() {
 	router.InitializeRoutes(server)
 	router.InitializeTagRoutes(server)
 	router.InitializeVendorRoutes(server)
+}
+
+func Run() {
+	server.Initialize()
+	router.StartRouter()
+	startRoutes()
 	router.Run(":8080")
 }
