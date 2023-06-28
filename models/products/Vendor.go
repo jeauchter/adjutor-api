@@ -82,3 +82,11 @@ func (handle *Vendor) DeleteVendor(db *gorm.DB, id uint32) (int64, error) {
 	}
 	return db.RowsAffected, nil
 }
+
+func (handle *Vendor) VendorById(db *gorm.DB, vendorId uint32) (*Vendor, error) {
+	var err = db.Debug().Model(&Vendor{}).Where("id = ?", vendorId).Take(&handle).Error
+	if err != nil {
+		return &Vendor{}, err
+	}
+	return handle, nil
+}

@@ -14,11 +14,11 @@ import (
 	"github.com/jeremyauchter/adjutor/utils/formaterror"
 )
 
-func (server *Server) Tags(w http.ResponseWriter, r *http.Request) {
+func (server *Server) Vendors(w http.ResponseWriter, r *http.Request) {
 
-	post := products.Tag{}
+	post := products.Vendor{}
 
-	posts, err := post.AllTags(server.database.Product)
+	posts, err := post.AllVendors(server.database.Product)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -26,21 +26,21 @@ func (server *Server) Tags(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, posts)
 }
 
-func (server *Server) CreateTag(w http.ResponseWriter, r *http.Request) {
+func (server *Server) CreateVendor(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	tag := products.Tag{}
-	err = json.Unmarshal(body, &tag)
+	vendor := products.Vendor{}
+	err = json.Unmarshal(body, &vendor)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	tag.PrepareTag()
-	err = tag.ValidateTag()
+	vendor.PrepareVendor()
+	err = vendor.ValidateVendor()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -50,17 +50,17 @@ func (server *Server) CreateTag(w http.ResponseWriter, r *http.Request) {
 	// 	responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 	// 	return
 	// }
-	tagCreated, err := tag.CreateTag(server.database.Product)
+	vendorCreated, err := vendor.CreateVendor(server.database.Product)
 	if err != nil {
 		formattedError := formaterror.FormatError(err.Error())
 		responses.ERROR(w, http.StatusInternalServerError, formattedError)
 		return
 	}
-	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, tagCreated.ID))
-	responses.JSON(w, http.StatusCreated, tagCreated)
+	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, vendorCreated.ID))
+	responses.JSON(w, http.StatusCreated, vendorCreated)
 }
 
-func (server *Server) UpdateTag(w http.ResponseWriter, r *http.Request) {
+func (server *Server) UpdateVendor(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
@@ -80,14 +80,14 @@ func (server *Server) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// Check if the post exist
-	tag := products.Tag{}
-	err = server.database.Product.Debug().Model(products.Tag{}).Where("id = ?", id).Take(&tag).Error
+	vendor := products.Vendor{}
+	err = server.database.Product.Debug().Model(products.Vendor{}).Where("id = ?", id).Take(&vendor).Error
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, errors.New("tag not found"))
+		responses.ERROR(w, http.StatusNotFound, errors.New("vendor not found"))
 		return
 	}
 
-	// Read the data taged
+	// Read the data vendored
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -95,31 +95,31 @@ func (server *Server) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Start processing the request data
-	tagUpdate := products.Tag{}
-	err = json.Unmarshal(body, &tagUpdate)
+	vendorUpdate := products.Vendor{}
+	err = json.Unmarshal(body, &vendorUpdate)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	tagUpdate.PrepareTag()
-	err = tagUpdate.ValidateTag()
+	vendorUpdate.PrepareVendor()
+	err = vendorUpdate.ValidateVendor()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	tagUpdated, err := tagUpdate.UpdateTag(server.database.Product, id)
+	vendorUpdated, err := vendorUpdate.UpdateVendor(server.database.Product, id)
 
 	if err != nil {
 		formattedError := formaterror.FormatError(err.Error())
 		responses.ERROR(w, http.StatusInternalServerError, formattedError)
 		return
 	}
-	responses.JSON(w, http.StatusOK, tagUpdated)
+	responses.JSON(w, http.StatusOK, vendorUpdated)
 }
 
-func (server *Server) GetTagById(w http.ResponseWriter, r *http.Request) {
+func (server *Server) GetVendorById(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	id64, err := strconv.ParseUint(vars["id"], 10, 64)
@@ -128,21 +128,21 @@ func (server *Server) GetTagById(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
-	tag := products.Tag{}
+	vendor := products.Vendor{}
 
-	tagReceived, err := tag.TagById(server.database.Product, id)
+	vendorReceived, err := vendor.VendorById(server.database.Product, id)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, tagReceived)
+	responses.JSON(w, http.StatusOK, vendorReceived)
 }
 
-func (server *Server) DeleteTag(w http.ResponseWriter, r *http.Request) {
+func (server *Server) DeleteVendor(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	// Is a valid tag id given to us?
+	// Is a valid vendor id given to us?
 	id64, err := strconv.ParseUint(vars["id"], 10, 64)
 	id := uint32(id64)
 	if err != nil {
@@ -157,15 +157,15 @@ func (server *Server) DeleteTag(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	// Check if the tag exist
-	tag := products.Tag{}
-	err = server.database.Product.Debug().Model(products.Tag{}).Where("id = ?", id).Take(&tag).Error
+	// Check if the vendor exist
+	vendor := products.Vendor{}
+	err = server.database.Product.Debug().Model(products.Vendor{}).Where("id = ?", id).Take(&vendor).Error
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, errors.New("Unauthorized"))
 		return
 	}
 
-	_, err = tag.DeleteTag(server.database.Product, id)
+	_, err = vendor.DeleteVendor(server.database.Product, id)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return

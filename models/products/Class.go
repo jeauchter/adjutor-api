@@ -82,3 +82,11 @@ func (handle *Class) DeleteClass(db *gorm.DB, id uint32) (int64, error) {
 	}
 	return db.RowsAffected, nil
 }
+
+func (handle *Class) ClassById(db *gorm.DB, classId uint32) (*Class, error) {
+	var err = db.Debug().Model(&Class{}).Where("id = ?", classId).Take(&handle).Error
+	if err != nil {
+		return &Class{}, err
+	}
+	return handle, nil
+}

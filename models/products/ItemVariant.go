@@ -82,3 +82,11 @@ func (handle *ItemVariant) DeleteItemVariant(db *gorm.DB, id uint32) (int64, err
 	}
 	return db.RowsAffected, nil
 }
+
+func (handle *ItemVariant) ItemVariantById(db *gorm.DB, itemvariantId uint32) (*ItemVariant, error) {
+	var err = db.Debug().Model(&ItemVariant{}).Where("id = ?", itemvariantId).Take(&handle).Error
+	if err != nil {
+		return &ItemVariant{}, err
+	}
+	return handle, nil
+}

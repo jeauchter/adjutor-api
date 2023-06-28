@@ -82,3 +82,11 @@ func (handle *Audience) DeleteAudience(db *gorm.DB, id uint32) (int64, error) {
 	}
 	return db.RowsAffected, nil
 }
+
+func (handle *Audience) AudienceById(db *gorm.DB, audienceId uint32) (*Audience, error) {
+	var err = db.Debug().Model(&Audience{}).Where("id = ?", audienceId).Take(&handle).Error
+	if err != nil {
+		return &Audience{}, err
+	}
+	return handle, nil
+}

@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/jeremyauchter/adjutor/api/controllers"
-	"github.com/jeremyauchter/adjutor/api/middlewares"
 	"github.com/jeremyauchter/adjutor/api/routes"
 )
 
@@ -12,7 +11,8 @@ var router = routes.Routers{}
 func Run() {
 	server.Initialize()
 	router.StartRouter()
-	router.InitializeRoutes(middlewares.SetMiddlewareJSON(server.Home))
+	router.InitializeRoutes(server)
 	router.InitializeTagRoutes(server)
+	router.InitializeVendorRoutes(server)
 	router.Run(":8080")
 }

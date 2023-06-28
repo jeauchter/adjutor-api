@@ -82,3 +82,11 @@ func (handle *ProductType) DeleteProductType(db *gorm.DB, id uint32) (int64, err
 	}
 	return db.RowsAffected, nil
 }
+
+func (handle *ProductType) ProductTypeById(db *gorm.DB, producttypeId uint32) (*ProductType, error) {
+	var err = db.Debug().Model(&ProductType{}).Where("id = ?", producttypeId).Take(&handle).Error
+	if err != nil {
+		return &ProductType{}, err
+	}
+	return handle, nil
+}

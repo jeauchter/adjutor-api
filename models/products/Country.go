@@ -82,3 +82,11 @@ func (handle *Country) DeleteCountry(db *gorm.DB, id uint32) (int64, error) {
 	}
 	return db.RowsAffected, nil
 }
+
+func (handle *Country) CountryById(db *gorm.DB, countryId uint32) (*Country, error) {
+	var err = db.Debug().Model(&Country{}).Where("id = ?", countryId).Take(&handle).Error
+	if err != nil {
+		return &Country{}, err
+	}
+	return handle, nil
+}

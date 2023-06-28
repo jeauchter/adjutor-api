@@ -62,6 +62,14 @@ func (handle *Tag) TagByName(db *gorm.DB, tagName string) (*Tag, error) {
 	return handle, nil
 }
 
+func (handle *Tag) TagById(db *gorm.DB, tagId uint32) (*Tag, error) {
+	var err = db.Debug().Model(&Tag{}).Where("id = ?", tagId).Take(&handle).Error
+	if err != nil {
+		return &Tag{}, err
+	}
+	return handle, nil
+}
+
 func (handle *Tag) UpdateTag(db *gorm.DB, id uint32) (*Tag, error) {
 	var err = db.Debug().Model(&Tag{}).Where("id = ?", id).Updates(Tag{Name: handle.Name, Active: handle.Active}).Error
 	if err != nil {

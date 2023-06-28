@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/jeremyauchter/adjutor/api/controllers"
+	"github.com/jeremyauchter/adjutor/api/middlewares"
 )
 
 type Routers struct {
@@ -16,10 +18,10 @@ func (r *Routers) StartRouter() {
 	r.routers = mux.NewRouter()
 }
 
-func (r *Routers) InitializeRoutes(s http.HandlerFunc) {
+func (r *Routers) InitializeRoutes(s controllers.Server) {
 
 	// Home Route
-	r.routers.HandleFunc("/", s).Methods("GET")
+	r.routers.HandleFunc("/", middlewares.SetMiddlewareJSON(s.Home)).Methods("GET")
 
 	// // Login Route
 	// s.Router.HandleFunc("/login", middlewares.SetMiddlewareJSON(s.Login)).Methods("POST")
