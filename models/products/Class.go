@@ -10,24 +10,27 @@ import (
 )
 
 type Class struct {
-	ID        uint32    `gorm:"primaryKey;autoIncrement" json:"id"`
-	Name      string    `gorm:"size:255;not null;unique" json:"name"`
-	Active    int8      `gorm:"default:1;not null;index" json:"active"`
-	CreatedAt time.Time `json:"createdAt"`
-	CreatedBy int32     `json:"createdBy"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	UpdatedBy int32     `json:"updatedBy"`
+	gorm.Model
+	ID           uint32    `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name         string    `gorm:"size:255;not null;unique" json:"name"`
+	Active       int8      `gorm:"default:1;not null;index" json:"active"`
+	DepartmentID uint32    `gorm:"not null;index" json:"departmentId"`
+	CreatedAt    time.Time `json:"createdAt"`
+	CreatedBy    int32     `json:"createdBy"`
+	UpdatedAt    time.Time `json:"updatedAt"`
+	UpdatedBy    int32     `json:"updatedBy"`
+	Department   Department
 }
 
 func (handle *Class) AllClasses(db *gorm.DB) (*[]Class, error) {
 	var err error
-	classs := []Class{}
-	err = db.Debug().Model(&Class{}).Where("active = ?", 1).Limit(100).Find(&classs).Error
+	classes := []Class{}
+	err = db.Debug().Model(&Class{}).Preload("Department").Where("active = ?", 1).Limit(100).Find(&classes).Error
 	if err != nil {
 		return &[]Class{}, err
 	}
 
-	return &classs, nil
+	return &classes, nil
 }
 
 func (handle *Class) PrepareClass() {
@@ -42,6 +45,9 @@ func (handle *Class) ValidateClass() error {
 
 	if handle.Name == "" {
 		return errors.New("name required")
+	}
+	if handle.DepartmentID < 1 {
+		return errors.New("department required when building class")
 	}
 	return nil
 }

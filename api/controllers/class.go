@@ -16,14 +16,19 @@ import (
 
 func (server *Server) Classes(w http.ResponseWriter, r *http.Request) {
 
-	post := products.Class{}
+	class := products.Class{}
 
-	posts, err := post.AllClasses(server.database.Product)
+	classes, err := class.AllClasses(server.database.Product)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusOK, posts)
+	responses.JSON(w, http.StatusOK, classes)
+}
+
+type NewClass struct {
+	Name           string `json:"name"`
+	DepartmentName string `json:"departmentName"`
 }
 
 func (server *Server) CreateClass(w http.ResponseWriter, r *http.Request) {
@@ -33,14 +38,24 @@ func (server *Server) CreateClass(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	class := products.Class{}
+
+	class := NewClass{}
 	err = json.Unmarshal(body, &class)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+	}
+
+	dbClass := products.Class{
+		Name:       class.Name,
+		Department: products.Department{Name: class.DepartmentName},
+	}
+	err = json.Unmarshal(body, &dbClass)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	class.PrepareClass()
-	err = class.ValidateClass()
+	dbClass.PrepareClass()
+	err = dbClass.ValidateClass()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -50,14 +65,14 @@ func (server *Server) CreateClass(w http.ResponseWriter, r *http.Request) {
 	// 	responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 	// 	return
 	// }
-	classCreated, err := class.CreateClass(server.database.Product)
+	dbClassCreated, err := dbClass.CreateClass(server.database.Product)
 	if err != nil {
 		formattedError := formaterror.FormatError(err.Error())
 		responses.ERROR(w, http.StatusInternalServerError, formattedError)
 		return
 	}
-	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, classCreated.ID))
-	responses.JSON(w, http.StatusCreated, classCreated)
+	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, dbClassCreated.ID))
+	responses.JSON(w, http.StatusCreated, dbClassCreated)
 }
 
 func (server *Server) UpdateClass(w http.ResponseWriter, r *http.Request) {

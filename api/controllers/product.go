@@ -33,31 +33,36 @@ func (server *Server) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	product := products.Product{}
-	err = json.Unmarshal(body, &product)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	product.PrepareProduct()
-	err = product.ValidateProduct()
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	// uid, err := auth.ExtractTokenID(r)
+
+	fmt.Println(string(body))
+
+	// handle product build struct
+
+	// product := products.Product{}
+	// err = json.Unmarshal(body, &product)
 	// if err != nil {
-	// 	responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
+	// 	responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	// 	return
 	// }
-	productCreated, err := product.CreateProduct(server.database.Product)
-	if err != nil {
-		formattedError := formaterror.FormatError(err.Error())
-		responses.ERROR(w, http.StatusInternalServerError, formattedError)
-		return
-	}
-	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, productCreated.ID))
-	responses.JSON(w, http.StatusCreated, productCreated)
+	// product.PrepareProduct()
+	// err = product.ValidateProduct()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusUnprocessableEntity, err)
+	// 	return
+	// }
+	// // uid, err := auth.ExtractTokenID(r)
+	// // if err != nil {
+	// // 	responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
+	// // 	return
+	// // }
+	// productCreated, err := product.CreateProduct(server.database.Product)
+	// if err != nil {
+	// 	formattedError := formaterror.FormatError(err.Error())
+	// 	responses.ERROR(w, http.StatusInternalServerError, formattedError)
+	// 	return
+	// }
+	// w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, productCreated.ID))
+	// responses.JSON(w, http.StatusCreated, productCreated)
 }
 
 func (server *Server) UpdateProduct(w http.ResponseWriter, r *http.Request) {
