@@ -17,6 +17,8 @@ func startRoutes() {
 	router.InitializeCountryRoutes(server)
 	router.InitializeItemVariantRoutes(server)
 	router.InitializeClassRoutes(server)
+	router.InitializeProductRoutes(server)
+	router.InitializeProductTypeRoutes(server)
 }
 
 func Run() {
