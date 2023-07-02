@@ -49,10 +49,8 @@ func (server *Server) CreateClass(w http.ResponseWriter, r *http.Request) {
 	dbClass := products.Class{
 		Name: class.Name,
 	}
-	departmentId, err := department.DepartmentByName(server.database.Product, class.DepartmentName)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-	}
+	departmentId, _ := department.DepartmentByName(server.database.Product, class.DepartmentName)
+
 	if departmentId.ID > 0 {
 
 		dbClass.DepartmentID = departmentId.ID
@@ -63,7 +61,7 @@ func (server *Server) CreateClass(w http.ResponseWriter, r *http.Request) {
 	dbClass.PrepareClass()
 	err = dbClass.ValidateClass()
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
 	// uid, err := auth.ExtractTokenID(r)

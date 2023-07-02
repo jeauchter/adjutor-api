@@ -21,10 +21,22 @@ type Class struct {
 	Department   Department
 }
 
+type ClassResult struct {
+	ID           uint32 `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name         string `gorm:"size:255;not null;unique" json:"name"`
+	Active       int8   `gorm:"default:1;not null;index" json:"active"`
+	DepartmentID uint32
+	CreatedAt    time.Time `json:"createdAt"`
+	CreatedBy    int32     `json:"createdBy"`
+	UpdatedAt    time.Time `json:"updatedAt"`
+	UpdatedBy    int32     `json:"updatedBy"`
+}
+
 func (handle *Class) AllClasses(db *gorm.DB) (*[]Class, error) {
 	var err error
 	classes := []Class{}
-	err = db.Debug().Preload("Department").Model(&Class{}).Find(&classes).Error
+
+	err = db.Debug().Omit("Department").Model(&Class{}).Find(&classes).Error
 	if err != nil {
 		return &[]Class{}, err
 	}
