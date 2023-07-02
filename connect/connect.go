@@ -45,7 +45,7 @@ func (server *Server) Connect() {
 	server.Auth.Debug().AutoMigrate(&auth.User{}) //database migration
 	server.InitializeProduct(os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_PORT"), os.Getenv("DB_HOST"))
 	server.Product.Debug().AutoMigrate(productModels...)
-	server.Product.Debug().AutoMigrate(&products.Product{})
+	server.Product.Debug().AutoMigrate(&products.Product{}, &products.Class{}, &products.Department{})
 }
 
 func (server *Server) InitializeAuth(DbUser, DbPassword, DbPort, DbHost string) {

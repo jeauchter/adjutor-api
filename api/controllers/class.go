@@ -45,15 +45,21 @@ func (server *Server) CreateClass(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
 
+	department := products.Department{}
 	dbClass := products.Class{
-		Name:       class.Name,
-		Department: products.Department{Name: class.DepartmentName},
+		Name: class.Name,
 	}
-	err = json.Unmarshal(body, &dbClass)
+	departmentId, err := department.DepartmentByName(server.database.Product, class.DepartmentName)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
 	}
+	if departmentId.ID > 0 {
+
+		dbClass.DepartmentID = departmentId.ID
+	} else {
+		dbClass.Department = products.Department{Name: class.DepartmentName}
+	}
+
 	dbClass.PrepareClass()
 	err = dbClass.ValidateClass()
 	if err != nil {

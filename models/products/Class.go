@@ -10,11 +10,10 @@ import (
 )
 
 type Class struct {
-	gorm.Model
-	ID           uint32    `gorm:"primaryKey;autoIncrement" json:"id"`
-	Name         string    `gorm:"size:255;not null;unique" json:"name"`
-	Active       int8      `gorm:"default:1;not null;index" json:"active"`
-	DepartmentID uint32    `gorm:"not null;index" json:"departmentId"`
+	ID           uint32 `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name         string `gorm:"size:255;not null;unique" json:"name"`
+	Active       int8   `gorm:"default:1;not null;index" json:"active"`
+	DepartmentID uint32
 	CreatedAt    time.Time `json:"createdAt"`
 	CreatedBy    int32     `json:"createdBy"`
 	UpdatedAt    time.Time `json:"updatedAt"`
@@ -25,7 +24,7 @@ type Class struct {
 func (handle *Class) AllClasses(db *gorm.DB) (*[]Class, error) {
 	var err error
 	classes := []Class{}
-	err = db.Debug().Model(&Class{}).Preload("Department").Where("active = ?", 1).Limit(100).Find(&classes).Error
+	err = db.Debug().Preload("Department").Model(&Class{}).Find(&classes).Error
 	if err != nil {
 		return &[]Class{}, err
 	}
@@ -46,14 +45,11 @@ func (handle *Class) ValidateClass() error {
 	if handle.Name == "" {
 		return errors.New("name required")
 	}
-	if handle.DepartmentID < 1 {
-		return errors.New("department required when building class")
-	}
 	return nil
 }
 
 func (handle *Class) CreateClass(db *gorm.DB) (*Class, error) {
-	var err = db.Debug().Model(&Class{}).Create(&handle).Error
+	var err = db.Debug().Model(&Class{}).Preload("Department").Create(&handle).Error
 	if err != nil {
 		return &Class{}, err
 	}
@@ -90,9 +86,10 @@ func (handle *Class) DeleteClass(db *gorm.DB, id uint32) (int64, error) {
 }
 
 func (handle *Class) ClassById(db *gorm.DB, classId uint32) (*Class, error) {
-	var err = db.Debug().Model(&Class{}).Where("id = ?", classId).Take(&handle).Error
+	var err = db.Debug().Preload("Department").Model(&Class{}).Where("id = ?", classId).Take(&handle).Error
 	if err != nil {
 		return &Class{}, err
 	}
 	return handle, nil
+
 }

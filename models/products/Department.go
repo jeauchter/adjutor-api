@@ -10,7 +10,6 @@ import (
 )
 
 type Department struct {
-	gorm.Model
 	ID        uint32    `gorm:"primaryKey;autoIncrement" json:"id"`
 	Name      string    `gorm:"size:255;not null;unique" json:"name"`
 	Active    int8      `gorm:"default:1;not null;index" json:"active"`
