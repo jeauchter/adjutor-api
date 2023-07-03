@@ -7,7 +7,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /opt/adjutor
 
 #final
 FROM alpine:latest
-COPY --from=build /opt/adjutor /opt/adjutor
+COPY --from=build /opt/adjutor-api /opt/adjutor-api
 EXPOSE 8080
-ENTRYPOINT [ "/opt/adjutor" ]
+ENTRYPOINT [ "/opt/adjutor-api" ]
 
