@@ -25,7 +25,7 @@ func (handle *Class) AllClasses(db *gorm.DB) (*[]Class, error) {
 	var err error
 	classes := []Class{}
 
-	err = db.Debug().Omit("Department").Model(&Class{}).Find(&classes).Error
+	err = db.Debug().Preload("Department").Model(&Class{}).Find(&classes).Error
 	if err != nil {
 		return &[]Class{}, err
 	}
