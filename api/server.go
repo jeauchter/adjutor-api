@@ -19,6 +19,7 @@ func startRoutes() {
 	router.InitializeClassRoutes(server)
 	router.InitializeProductRoutes(server)
 	router.InitializeProductTypeRoutes(server)
+	router.InitializeStyleRoutes(server)
 }
 
 func Run() {
