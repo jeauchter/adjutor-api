@@ -26,6 +26,19 @@ func (server *Server) Products(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, posts)
 }
 
+type NewProduct struct {
+	Name          string  `json:"name"`
+	StyleId       int32   `json:"styleId"`
+	VendorId      int32   `json:"vendorId"`
+	ClassId       int32   `json:"classId"`
+	ProductTypeId int32   `json:"productTypeId"`
+	Variants      []int32 `json:"variants"`
+}
+
+type Variant struct {
+	Id int32
+}
+
 func (server *Server) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
@@ -36,33 +49,53 @@ func (server *Server) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(string(body))
 
-	// handle product build struct
+	submittedProduct := NewProduct{}
+	err = json.Unmarshal(body, &submittedProduct)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	product := products.Product{
+		Name:          submittedProduct.Name,
+		StyleID:       submittedProduct.StyleId,
+		VendorID:      submittedProduct.VendorId,
+		ClassID:       submittedProduct.ClassId,
+		ProductTypeID: submittedProduct.ProductTypeId,
+	}
+	product.PrepareProduct()
+	err = product.ValidateProduct()
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	// uid, err := auth.ExtractTokenID(r)
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
+	// 	return
+	// }
+	productCreated, err := product.CreateProduct(server.database.Product)
+	if err != nil {
+		formattedError := formaterror.FormatError(err.Error())
+		responses.ERROR(w, http.StatusInternalServerError, formattedError)
+		return
+	}
 
-	// product := products.Product{}
-	// err = json.Unmarshal(body, &product)
-	// if err != nil {
-	// 	responses.ERROR(w, http.StatusUnprocessableEntity, err)
-	// 	return
-	// }
-	// product.PrepareProduct()
-	// err = product.ValidateProduct()
-	// if err != nil {
-	// 	responses.ERROR(w, http.StatusUnprocessableEntity, err)
-	// 	return
-	// }
-	// // uid, err := auth.ExtractTokenID(r)
-	// // if err != nil {
-	// // 	responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
-	// // 	return
-	// // }
-	// productCreated, err := product.CreateProduct(server.database.Product)
-	// if err != nil {
-	// 	formattedError := formaterror.FormatError(err.Error())
-	// 	responses.ERROR(w, http.StatusInternalServerError, formattedError)
-	// 	return
-	// }
-	// w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, productCreated.ID))
-	// responses.JSON(w, http.StatusCreated, productCreated)
+	for _, value := range submittedProduct.Variants {
+		fmt.Println(value)
+		item := products.Item{
+			ItemVariantID: value,
+			ProductID:     int32(productCreated.ID),
+		}
+		_, err := item.CreateItem(server.database.Product)
+		if err != nil {
+			formattedError := formaterror.FormatError(err.Error())
+			responses.ERROR(w, http.StatusUnprocessableEntity, formattedError)
+			return
+		}
+	}
+
+	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, productCreated.ID))
+	responses.JSON(w, http.StatusCreated, productCreated)
 }
 
 func (server *Server) UpdateProduct(w http.ResponseWriter, r *http.Request) {

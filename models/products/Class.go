@@ -66,7 +66,7 @@ func (handle *Class) ClassByName(db *gorm.DB, className string) (*Class, error) 
 }
 
 func (handle *Class) UpdateClass(db *gorm.DB, id uint32) (*Class, error) {
-	var err = db.Debug().Model(&Class{}).Where("id = ?", id).Updates(Class{Name: handle.Name, Active: handle.Active}).Error
+	var err = db.Debug().Model(&Class{}).Where("id = ?", id).Updates(Class{Name: handle.Name, DepartmentID: handle.DepartmentID, Active: handle.Active}).Error
 	if err != nil {
 		return &Class{}, err
 	}

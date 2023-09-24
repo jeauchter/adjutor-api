@@ -18,3 +18,11 @@ type Item struct {
 	ItemVariant   ItemVariant
 	Product       Product
 }
+
+func (handle *Item) CreateItem(db *gorm.DB) (*Item, error) {
+	var err = db.Debug().Model(&Item{}).Create(&handle).Error
+	if err != nil {
+		return &Item{}, err
+	}
+	return handle, nil
+}

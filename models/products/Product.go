@@ -31,7 +31,7 @@ type Product struct {
 func (handle *Product) AllProducts(db *gorm.DB) (*[]Product, error) {
 	var err error
 	products := []Product{}
-	err = db.Debug().Model(&Product{}).Where("active = ?", 1).Limit(100).Find(&products).Error
+	err = db.Debug().Model(&Product{}).Preload("Style").Preload("Class").Preload("ProductType").Preload("Vendor").Where("active = ?", 1).Limit(100).Find(&products).Error
 	if err != nil {
 		return &[]Product{}, err
 	}
@@ -52,6 +52,7 @@ func (handle *Product) ValidateProduct() error {
 	if handle.Name == "" {
 		return errors.New("name required")
 	}
+
 	return nil
 }
 
@@ -72,7 +73,7 @@ func (handle *Product) ProductByName(db *gorm.DB, productName string) (*Product,
 }
 
 func (handle *Product) ProductById(db *gorm.DB, productId uint32) (*Product, error) {
-	var err = db.Debug().Model(&Product{}).Where("id = ?", productId).Take(&handle).Error
+	var err = db.Debug().Model(&Product{}).Preload("Style").Preload("Class").Preload("ProductType").Preload("Vendor").Where("id = ?", productId).Take(&handle).Error
 	if err != nil {
 		return &Product{}, err
 	}
